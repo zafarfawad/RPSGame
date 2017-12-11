@@ -35,18 +35,33 @@
             </div>
 
         </div>
+        <div class = "row">
+            <div class = "col-xs-4">
+                <h1 id = "player1-placeholder"></h1>
+            </div>
+            <div class = "col-xs-4">
+            </div>
+            <div class = "col-xs-4">
+                <h1 id = "player2-placeholder"></h1>
+            </div>
+        </div>
         <div class="row">
             <div class="col-xs-4 center-block player1">
-                <div class="btn-group-vertical">
+                <div class="btn-group-vertical ">
                     <button type="button" class="btn btn-primary playerChoice">Rock</button>
                     <button type="button" class="btn btn-primary playerChoice">Paper</button>
                     <button type="button" class="btn btn-primary playerChoice">Scissors</button>
                 </div>
+                <div class = "row">
+                    <div class = "col-sx-4">
+                        <h1 id = "userChoice1DBDisplay"></h1>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-6">
                         <ul class="list-group">
-                            <li class="list-group-item">wins:</li>
-                            <li class="list-group-item">losses:</li>
+                            <li class="list-group-item"><h4 class = "wins"> Wins: <span id ="player1Wins"> </span></h4></li>
+                            <li class="list-group-item"><h4 class = "losses"> Losses: <span id ="player1losses"> </span></h4></li>
                         </ul>
 
                     </div>
@@ -55,21 +70,31 @@
 
             <div class="col-xs-4 center-block results">
 
-                RESULTS
+                <h1 id = "winnerName"></h1>
             </div>
 
 
             <div class="col-xs-4 center-block player2">
-                <div class="btn-group-vertical">
+                <div class="btn-group-vertical ">
                     <button type="button" class="btn btn-primary playerChoice2">Rock</button>
                     <button type="button" class="btn btn-primary playerChoice2">Paper</button>
                     <button type="button" class="btn btn-primary playerChoice2">Scissors</button>
                 </div>
+
+                <div class = "row">
+                    <div class = "col-sx-4">
+                    </div>
+                </div>
+                <div class = "row">
+                    <div class = "col-sx-4">
+                        <h1 id = "userChoice2DBDisplay"></h1>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-6">
                         <ul class="list-group">
-                            <li class="list-group-item">wins:</li>
-                            <li class="list-group-item">losses:</li>
+                            <li class="list-group-item"><h4 class = "wins"> Wins: <span id ="player2Wins"> </span></h4></li>
+                            <li class="list-group-item"><h4 class = "losses"> Losses: <span id ="player2losses"> </span></h4></li>
                         </ul>
 
 
@@ -124,15 +149,19 @@
             event.preventDefault();
 
 
+
             if (name1) {
                 name2 = $("#player1Name").val().trim();
             } else {
                 name1 = $("#player1Name").val().trim();
             }
-            console.log(name2);
 
             database.ref().once("value", function (snapshot) {
+
                 var player1Name = snapshot.child("player1").val().name;
+//                name1 = snapshot.child("player1").val().name;
+
+
 
                 if (player1Name === "") {
                     player1.set({
@@ -144,54 +173,123 @@
                     });
                 }
             });
-        });
 
-
-        $(".playerChoice").click(function () {
-            // event.preventDefault();
-
-            var userChoice = $(this).text();
-
-            player1.set({
-                userChoice: userChoice,
-                name: name1
-
-            });
-        });
-
-        $(".playerChoice2").click(function () {
-            // event.preventDefault();
-
-            var userChoice = $(this).text();
-            player2.set({
-                userChoice: userChoice,
-                name: name2
-            });
+            $("#player1Name").val('');
 
         });
 
-        // if (userChoice === "r" || userChoice === "p" || userChoice === "s") {
 
 
-        // };
+
+//if (name1) {
+    $(".playerChoice").click(function () {
+        // event.preventDefault();
+
+        var userChoice = $(this).text();
+
+        player1.set({
+            userChoice: userChoice,
+            name: name1
+
+        });
+    });
+//};
+    $(".playerChoice2").click(function () {
+        // event.preventDefault();
+
+        var userChoice = $(this).text();
+        player2.set({
+            userChoice: userChoice,
+            name: name2
+        });
+console.log(userChoice);
+    });
+
 
 
         // database.on("child_changed", function (childSnapshot) {
-        database.ref().on("value", function (snapshot) {
+        database.ref().on("value", function (snapshot){
 
         // console.log(childSnapshot.val().name);
-        // console.log(snapshot.child("player1").val().name);
-        // console.log(snapshot.child("player2").val().name);
+
+            var playerNameDB1 = snapshot.child("player1").val().name
+            var playerNameDB2 = snapshot.child("player2").val().name2
 
 
-        // var player1Name = snapshot.child("player1").val().name;
+             $("#player1-placeholder").text(playerNameDB1);
+            $("#player2-placeholder").text(playerNameDB2);
+
+
+            var userChoiceDB1 = snapshot.child("player1").val().userChoice;
+            var userChoiceDB2 = snapshot.child("player2").val().userChoice;
+
+
+            $("#userChoice1DBDisplay").text(userChoiceDB1);
+            $("#userChoice2DBDisplay").text(userChoiceDB2);
+
+//Player 1 chooses rock
+            if (userChoiceDB1 === "Rock" ){
+                if(userChoiceDB2 === "Rock") {
+                    $("#winnerName").text("IT'S A DRAW");
+                }
+                else if (userChoiceDB2 === "Paper"){
+                    $("#winnerName").text((playerNameDB1) + " " +  " LOSSES");
+                    player1loss ++ ;
+                    $("#player1losses").text(player1loss);
+                }
+
+                else if (userChoiceDB2 === "Scissors"){
+                    $("#winnerName").text((playerNameDB1) + " " +  " WINS");
+                }
+            };
+//Player 1 chooses Paper
+
+            if (userChoiceDB1 === "Paper" ){
+                if(userChoiceDB2 === "Rock") {
+                    $("#winnerName").text((playerNameDB1) + " " +  " WINS");
+                    $("#userChoice1DBDisplay").text('');
+                    $("#userChoice2DBDisplay").text('');
+
+                }
+
+                else if (userChoiceDB2 === "Paper"){
+                    $("#winnerName").text("IT'S A DRAW");
+
+                }
+
+                else if (userChoiceDB2 === "Scissors"){
+                    $("#winnerName").text((playerNameDB1) + " " +  " LOSSES");
+                    player1loss ++ ;
+                    $("#player1losses").text(player1loss);
+                }
+
+            };
+//Player 1 chooses Scissors
+
+            if (userChoiceDB1 === "Scissors" ) {
+                if (userChoiceDB2 === "Rock") {
+                    $("#winnerName").text((playerNameDB1) + " " + " LOSSES");
+                    player1loss++;
+                    $("#player1losses").text(player1loss);
+
+                }
+
+                else if (userChoiceDB2 === "Paper") {
+                    $("#winnerName").text((playerNameDB1) + " " + " WINS");
+
+                }
+
+                else if (userChoiceDB2 === "Scissors") {
+                    $("#winnerName").text("IT'S A DRAW");
+
+
+                }
+
+            };
 
 
 
-
-
-        // console.log(childSnapshot.val().userChoice);
-        // });
+         });
     </script>
 
 
