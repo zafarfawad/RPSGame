@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="jumbotron" style="width: 90%; margin: 0 5%; text-align: center; background: black; color: white; border-radius: 5px">
+        <h1>Rock Paper Scissors</h1>
+    </div>
+    <br>
+    <br>
+
+
+    <div class="container" style="width:90%;margin:0 5%;padding:0">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="player1-input">Name</label>
+                    <input class="form-control" id="player1Name" type="text">
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-primary submitButton">Submit</button>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-4 center-block player1">
+                <div class="btn-group-vertical">
+                    <button type="button" class="btn btn-primary playerChoice">Rock</button>
+                    <button type="button" class="btn btn-primary playerChoice">Paper</button>
+                    <button type="button" class="btn btn-primary playerChoice">Scissors</button>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <ul class="list-group">
+                            <li class="list-group-item">wins:</li>
+                            <li class="list-group-item">losses:</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-4 center-block results">
+
+                RESULTS
+            </div>
+
+
+            <div class="col-xs-4 center-block player2">
+                <div class="btn-group-vertical">
+                    <button type="button" class="btn btn-primary playerChoice2">Rock</button>
+                    <button type="button" class="btn btn-primary playerChoice2">Paper</button>
+                    <button type="button" class="btn btn-primary playerChoice2">Scissors</button>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <ul class="list-group">
+                            <li class="list-group-item">wins:</li>
+                            <li class="list-group-item">losses:</li>
+                        </ul>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCBci2q12bD-Lkkk6FExLi2mHUChdeFpeM",
+            authDomain: "rps-game-e73ea.firebaseapp.com",
+            databaseURL: "https://rps-game-e73ea.firebaseio.com",
+            projectId: "rps-game-e73ea",
+            storageBucket: "rps-game-e73ea.appspot.com",
+            messagingSenderId: "728643815305"
+        };
+        firebase.initializeApp(config);
+
+        var player1win = 0;
+        var player2win = 0;
+        var player1loss = 0;
+        var player2loss = 0
+
+
+        var database = firebase.database();
+        var player1 = database.ref().child('player1');
+        var player2 = database.ref().child('player2');
+        var userChoice1 = "";
+        var userChoice2 = "";
+        var name1 = "";
+        var name2 = "";
+
+        player1.set({
+            userChoice: userChoice1,
+            name: name1
+        });
+        player2.set({
+            userChoice: userChoice2,
+            name: name2
+        });
+
+
+        $(".submitButton").click(function (event) {
+            event.preventDefault();
+
+
+            if (name1) {
+                name2 = $("#player1Name").val().trim();
+            } else {
+                name1 = $("#player1Name").val().trim();
+            }
+            console.log(name2);
+
+            database.ref().once("value", function (snapshot) {
+                var player1Name = snapshot.child("player1").val().name;
+
+                if (player1Name === "") {
+                    player1.set({
+                        name: name1
+                    });
+                } else {
+                    player2.set({
+                        name2: name2
+                    });
+                }
+            });
+        });
+
+
+        $(".playerChoice").click(function () {
+            // event.preventDefault();
+
+            var userChoice = $(this).text();
+
+            player1.set({
+                userChoice: userChoice,
+                name: name1
+
+            });
+        });
+
+        $(".playerChoice2").click(function () {
+            // event.preventDefault();
+
+            var userChoice = $(this).text();
+            player2.set({
+                userChoice: userChoice,
+                name: name2
+            });
+
+        });
+
+        // if (userChoice === "r" || userChoice === "p" || userChoice === "s") {
+
+
+        // };
+
+
+        // database.on("child_changed", function (childSnapshot) {
+        database.ref().on("value", function (snapshot) {
+
+        // console.log(childSnapshot.val().name);
+        // console.log(snapshot.child("player1").val().name);
+        // console.log(snapshot.child("player2").val().name);
+
+
+        // var player1Name = snapshot.child("player1").val().name;
+
+
+
+
+
+        // console.log(childSnapshot.val().userChoice);
+        // });
+    </script>
+
+
+</body>
+
+</html>
